@@ -13,12 +13,14 @@ import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceG
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.sql.UserSignUpRequestDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.models.sql.User;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.enums.Role;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidEmailException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.repositories.mysql.UserRepository;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.JwtService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mongo.PlayerService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mysql.AuthenticationService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mysql.UserService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Constants;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Validations;
 
 @Service("AuthenticationService")
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -43,7 +45,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	public JwtAuthenticationResponseDTO signup(UserSignUpRequestDTO signUpRequestDto) {
+	public JwtAuthenticationResponseDTO signup(UserSignUpRequestDTO signUpRequestDto) throws InvalidEmailException {
+		
+		if(!Validations.isValidEmail(signUpRequestDto.getEmail().trim())) {
+			throw new InvalidEmailException(Constants.Messages.INVALID_FORMAT_MAIL);
+		}
 		
 		String nickname = (signUpRequestDto.getNickname() != null && !signUpRequestDto.getNickname().trim().isEmpty()) ?
 				signUpRequestDto.getNickname().trim() : Constants.ANONYMOUS;
@@ -63,7 +69,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 	}
 	
-	public JwtAuthenticationResponseDTO signin(UserSignInRequestDTO signInRequestDto) {
+	public JwtAuthenticationResponseDTO signin(UserSignInRequestDTO signInRequestDto) throws InvalidEmailException {
+		
+		if(!Validations.isValidEmail(signInRequestDto.getEmail().trim())) {
+			throw new InvalidEmailException(Constants.Messages.INVALID_FORMAT_MAIL);
+		}
+		
 		
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.getEmail(), signInRequestDto.getPassword()));
 		

@@ -18,6 +18,8 @@ import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceG
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.sql.UserDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.models.sql.User;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.enums.Role;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidIdException;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.NotFoundException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.repositories.mysql.UserRepository;
 
 public class UserServiceImplTest {
@@ -69,7 +71,9 @@ public class UserServiceImplTest {
 	}
 	
 	@Test
-	public void updateTest() {
+	public void updateTest() throws InvalidIdException {
+		
+		String nickname = "Ana";
 		
 		String createdAt = DateTimeUtils.parseTimestamp(DateTimeUtils.getCurrentDateTime());
 		String updatedAt = DateTimeUtils.parseTimestamp(DateTimeUtils.getCurrentDateTime());
@@ -81,12 +85,12 @@ public class UserServiceImplTest {
 		userDto.setCreatedAt(createdAt);
 		userDto.setUpdatedAt(updatedAt);
 		userDto.setRole(Role.USER);
-		userDto.setNickname("Ana");
+		userDto.setNickname(nickname);
 		
 		User user = new User();
 		user.setUserId(1);
 		user.setEmail("test1@exemple.com");
-		user.setNickname("Ana");
+		user.setNickname(nickname);
 		user.setPassword("$2a$10$2oWabFiUIkxed/6/AGPKnen.cyOy.WguOo6ajvmV241kAIuefBdsS");
 		user.setCreatedAt(Timestamp.valueOf(createdAt));
 		user.setUpdatedAt(Timestamp.valueOf(updatedAt));
@@ -94,11 +98,11 @@ public class UserServiceImplTest {
 		
 		when(userRepository.save(Mockito.any())).thenReturn(user);
 		
-		UserDTO result = userService.update(userDto);
+		UserDTO result = userService.update(userDto, nickname);
 		
 		Assertions.assertEquals(1, result.getUserId());
 		Assertions.assertEquals("test1@exemple.com", result.getEmail());
-		Assertions.assertEquals("Ana", result.getNickname());
+		Assertions.assertEquals(nickname, result.getNickname());
 		Assertions.assertEquals("$2a$10$2oWabFiUIkxed/6/AGPKnen.cyOy.WguOo6ajvmV241kAIuefBdsS", result.getPassword());
 		Assertions.assertEquals(createdAt, result.getCreatedAt());
 		Assertions.assertEquals(updatedAt, result.getUpdatedAt());
@@ -107,7 +111,7 @@ public class UserServiceImplTest {
 	}
 	
 	@Test
-	public void deleteTrueTest() {
+	public void deleteTrueTest() throws InvalidIdException {
 		
 		when(userRepository.deleteUser(Mockito.anyInt())).thenReturn(1);
 		
@@ -116,18 +120,10 @@ public class UserServiceImplTest {
 		Assertions.assertTrue(result);
 	}
 	
-	@Test
-	public void deleteFalseTest() {
-		
-		when(userRepository.deleteUser(Mockito.anyInt())).thenReturn(0);
-		
-		boolean result = userService.delete(1);
-		
-		Assertions.assertFalse(result);
-	}
+	
 	
 	@Test
-	public void findUserTest() {
+	public void findUserTest() throws NotFoundException, InvalidIdException {
 		
 		int userId = 1;
 		

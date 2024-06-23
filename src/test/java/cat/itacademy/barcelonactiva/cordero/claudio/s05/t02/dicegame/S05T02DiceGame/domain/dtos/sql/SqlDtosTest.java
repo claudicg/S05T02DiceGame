@@ -18,11 +18,6 @@ public class SqlDtosTest {
 	}
 	
 	@Test
-	public void userResponseDtoTest() {
-		assertPojoMethodsFor(UserResponseDTO.class).testing(Method.CONSTRUCTOR, Method.GETTER, Method.SETTER, Method.TO_STRING);
-	}
-	
-	@Test
 	public void userSignInRequestDtoTest() {
 		assertPojoMethodsFor(UserSignInRequestDTO.class).testing(Method.CONSTRUCTOR, Method.GETTER, Method.SETTER, Method.TO_STRING);
 	}

@@ -14,8 +14,6 @@ public class Constants {
 		public static final String INVALID_FORMAT_PASSWORD = "Invalid password";
 		public static final String MAIL_FIELD = "Email cannot be empty";
 		public static final String WRONG_PASSWORD = "Wrong password";
-		public static final String SUCCESSFUL_SIGNUP = "Successful sign up";
-		public static final String SUCCESSFUL_SINGIN = "Successful sign in";
 		public static final String SUCCESSFUL_UPDATE = "Successful update";
 		public static final String LIST_GAMES = "List of games";
 		public static final String LIST_SUCCESS_PERC_PLAYERS = "List of all players succsess percentages";

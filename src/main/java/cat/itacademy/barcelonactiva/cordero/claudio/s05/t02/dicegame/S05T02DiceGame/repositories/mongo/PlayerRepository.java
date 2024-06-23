@@ -19,5 +19,8 @@ public interface PlayerRepository extends MongoRepository<Player, String> {
 	@Modifying
 	@Query(value="{userId : ?0}", delete = true)
 	int deletePlayer(@Param(value = "userId") int userId);
+	
+	@Query(value="{userId : ?0}")
+	Player findByUserId(@Param(value = "userId") int userId);
 		
 }

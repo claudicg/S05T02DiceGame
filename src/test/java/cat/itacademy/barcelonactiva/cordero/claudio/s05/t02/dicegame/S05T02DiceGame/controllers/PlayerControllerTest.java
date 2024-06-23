@@ -22,7 +22,7 @@ import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceG
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayerResponseDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayerSuccessPercentageDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayersSuccessPercentageResponseDTO;
-import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidException;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidIdException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.NotFoundException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mongo.PlayerService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Constants;
@@ -149,7 +149,7 @@ public class PlayerControllerTest {
 	}
 	
 	@Test
-	public void getPlayerGamesInvalidMongoIdTest() throws InvalidException, NotFoundException {
+	public void getPlayerGamesInvalidMongoIdTest() throws InvalidIdException, NotFoundException {
 		
 		String id = "6670151f2ac9071f05c98a8x";
 		
@@ -163,7 +163,7 @@ public class PlayerControllerTest {
 	}
 	
 	@Test
-	public void getPlayerGamesOkTest() throws NotFoundException, InvalidException {
+	public void getPlayerGamesOkTest() throws NotFoundException, InvalidIdException {
 		
 		String id = "6670151f2ac9071f05c98a89";
 		
@@ -359,7 +359,7 @@ public class PlayerControllerTest {
 	}
 	
 	@Test
-	public void deletePlayerInvalidUserIdTest() throws InvalidException {
+	public void deletePlayerInvalidUserIdTest() throws InvalidIdException {
 		
 		int userId = 0;
 		
@@ -373,9 +373,24 @@ public class PlayerControllerTest {
 	}
 	
 	@Test
-	public void deletePlayerOkTest() throws InvalidException {
+	public void deletePlayerOkTest() throws InvalidIdException {
 		
 		int userId = 1;
+		
+		GameDTO gameDto = new GameDTO();
+		gameDto.setDieOne(5);
+		gameDto.setDieTwo(1);
+		gameDto.setSumDice(6);
+		gameDto.setResult(false);
+		
+		PlayerDTO playerDto = new PlayerDTO();
+		playerDto.setId("6670151f2ac9071f05c98a89");
+		playerDto.setUserId(1);
+		playerDto.setGames(new ArrayList<>());
+		playerDto.getGames().add(gameDto);
+		playerDto.setSuccessPercentage(0);
+		
+		when(playerService.findPlayerByUserId(Mockito.anyInt())).thenReturn(playerDto);
 		
 		when(playerService.delete(Mockito.anyInt())).thenReturn(true);
 		

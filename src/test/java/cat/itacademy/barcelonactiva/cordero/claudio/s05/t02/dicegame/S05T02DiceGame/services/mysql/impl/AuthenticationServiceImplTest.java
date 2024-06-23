@@ -20,6 +20,7 @@ import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceG
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.sql.UserSignUpRequestDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.models.sql.User;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.enums.Role;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidEmailException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.repositories.mysql.UserRepository;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.JwtService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mongo.PlayerService;
@@ -56,7 +57,7 @@ public class AuthenticationServiceImplTest {
 	}
 	
 	@Test
-	public void signupTest() {
+	public void signupTest() throws InvalidEmailException {
 		
 		UserSignUpRequestDTO userSignUp = new UserSignUpRequestDTO();
 		userSignUp.setEmail("test2@exemple.com");
@@ -88,10 +89,10 @@ public class AuthenticationServiceImplTest {
 	}
 
 	@Test
-	public void signinTest() {
+	public void signinTest() throws InvalidEmailException {
 		
 		UserSignInRequestDTO signInRequestDto = new UserSignInRequestDTO();
-		signInRequestDto.setEmail("test2@exemple");
+		signInRequestDto.setEmail("test2@exemple.com");
 		signInRequestDto.setPassword("1234");
 		
 		Timestamp createdAt = DateTimeUtils.getCurrentDateTime();

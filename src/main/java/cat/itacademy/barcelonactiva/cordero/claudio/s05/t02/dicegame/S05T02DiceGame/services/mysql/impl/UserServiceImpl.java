@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.sql.UserDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.models.sql.User;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidIdException;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.NotFoundException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.mappers.SQLMapper;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.repositories.mysql.UserRepository;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mysql.UserService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Constants;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.DateTimeUtils;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Validations;
  
  
 @Service("UserService")
@@ -56,9 +59,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO update(UserDTO updatedUser) {
+	public UserDTO update(UserDTO updatedUser, String nickname) throws InvalidIdException {
 		
 		logger.info("UserServiceImpl :: update :: update new user.");
+		
+		if(!Validations.isValidNickName(nickname)) {
+			updatedUser.setNickname(Constants.ANONYMOUS);
+		}else {
+			updatedUser.setNickname(nickname);
+		}
+		updatedUser.setUpdatedAt(DateTimeUtils.parseTimestamp(DateTimeUtils.getCurrentDateTime()));
 		
 		User user = SQLMapper.mapUserDtoToUserEntity(updatedUser);
 		
@@ -68,7 +78,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean delete(int userId) {
+	public boolean delete(int userId) throws InvalidIdException {
+		
+		if(!Validations.isValidNumber(userId)) {
+			throw new InvalidIdException(Constants.Exceptions.INVALID_ID);
+		}
 		
 		int deletedRecords = userRepository.deleteUser(userId);
 		return deletedRecords > 0 ? true : false;
@@ -76,17 +90,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO findUser(int userId) {
+	public UserDTO findUser(int userId) throws NotFoundException, InvalidIdException {
 		
 		logger.info("UserServiceImpl :: findUser :: find the user.");
 		
-		User user = userRepository.findById(userId).orElse(null);
+		if(!Validations.isValidNumber(userId)) {
+			throw new InvalidIdException(Constants.Exceptions.INVALID_ID);
+		}
 		
-		if(user != null) {
-			return SQLMapper.mapUserEntityToUserDto(user);
-		} else {
-			return null;
-		}	
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException(Constants.Exceptions.USER_NOTFOUND));
+		
+		return SQLMapper.mapUserEntityToUserDto(user);
 		
 	}
 }

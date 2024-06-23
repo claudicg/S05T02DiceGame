@@ -57,6 +57,21 @@ public class PlayerServiceImpl implements PlayerService{
 	}
 	
 	@Override
+	public PlayerDTO findPlayerByUserId(int userId) {
+		
+		logger.info("PlayerServiceImpl :: findPlayerByUserId :: find the player.");
+		
+		Player player = playerRepository.findByUserId(userId);
+		
+		if(player != null) {
+			return MongoMapper.mapPlayerEntityToDto(player);
+		} else {
+			return null;
+		}	
+		
+	}
+	
+	@Override
 	public GameDTO rollDice() {
 		
 		logger.info("PlayerServiceImpl :: rollDice :: roll the dice.");		

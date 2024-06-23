@@ -43,11 +43,11 @@ public class UserControllerIntegrationTest {
 	@Test
 	public void updateTest() throws Exception {
 		
-		this.mvc.perform(put("/dicegame/users/{userId}/update/{nickname}", 2, "Ana"))
+		this.mvc.perform(put("/dicegame/users/{userId}/update/{nickname}", 1, "ADMIN"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType("application/json"))
-				.andExpect(jsonPath("$.userDto.nickname").value("Ana"));
+				.andExpect(jsonPath("$.nickname").value("ADMIN"));
 	}
 	
 }

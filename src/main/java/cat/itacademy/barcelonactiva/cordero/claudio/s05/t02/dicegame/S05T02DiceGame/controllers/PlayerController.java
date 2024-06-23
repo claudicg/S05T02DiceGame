@@ -22,7 +22,7 @@ import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceG
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayerResponseDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayerSuccessPercentageDTO;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.domain.dtos.mongo.PlayersSuccessPercentageResponseDTO;
-import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidException;
+import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.InvalidIdException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.exceptions.NotFoundException;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mongo.PlayerService;
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.utils.Constants;
@@ -90,7 +90,7 @@ public class PlayerController {
 	
 	@Operation(summary = Constants.SwaggerAnnotations.PLAYER_GAMES)
 	@GetMapping("/{id}/games")
-	public ResponseEntity<PlayerGamesResponseDTO> getPlayerGames(@PathVariable String id) throws InvalidException, NotFoundException{
+	public ResponseEntity<PlayerGamesResponseDTO> getPlayerGames(@PathVariable String id) throws InvalidIdException, NotFoundException{
 		
 		logger.info("PlayerController :: showOnePlayersGames :: show a player's games.");
 		
@@ -168,7 +168,7 @@ public class PlayerController {
 	@Operation(summary = Constants.SwaggerAnnotations.DELETE_PLAYER)
 	@DeleteMapping("/{userId}/deletePlayer")
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<DeleteResponseDTO> deletePlayer(@PathVariable int userId) throws InvalidException {
+	public ResponseEntity<DeleteResponseDTO> deletePlayer(@PathVariable("userId") int userId) throws InvalidIdException {
 		
 		logger.info("PlayerController :: deletePlayer :: delete player.");
 		
@@ -177,9 +177,18 @@ public class PlayerController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
-		boolean result = playerService.delete(userId);
-		DeleteResponseDTO response = new DeleteResponseDTO(result, Constants.Messages.DELETED, "");	
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		PlayerDTO playerDto = playerService.findPlayerByUserId(userId);
+		
+		if(playerDto == null) {
+			DeleteResponseDTO response = new DeleteResponseDTO(false, "", Constants.Exceptions.PLAYER_NOTFOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		}else{
+			boolean result = playerService.delete(userId);
+			DeleteResponseDTO response = new DeleteResponseDTO(result, Constants.Messages.DELETED, "");	
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
+		
+		
 	}
 	
 	public double calculateAverageSuccsessPercentage() {

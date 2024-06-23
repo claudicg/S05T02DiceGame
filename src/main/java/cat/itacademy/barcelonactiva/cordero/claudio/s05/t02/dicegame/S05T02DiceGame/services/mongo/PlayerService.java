@@ -22,4 +22,5 @@ public interface PlayerService {
 	GameDTO rollDice();
 	PlayerDTO addGame(PlayerDTO playerDto, GameDTO gameDto);
 	void saveDataInMongoCollectionPlayer(User user);
+	PlayerDTO findPlayerByUserId(int userId);
 }

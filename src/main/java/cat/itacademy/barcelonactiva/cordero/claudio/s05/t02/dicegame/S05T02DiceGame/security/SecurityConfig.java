@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import cat.itacademy.barcelonactiva.cordero.claudio.s05.t02.dicegame.S05T02DiceGame.services.mysql.UserService;
 
+
  
 @Configuration
 @EnableWebSecurity
@@ -65,6 +66,7 @@ public class SecurityConfig {
 				                     "/v3/api-docs/**",
 				                     "/swagger-resources/**",
 				                     "/webjars/**").permitAll()
+					.requestMatchers("/error").permitAll()
 					.anyRequest().authenticated())
 			.authenticationProvider(authenticationProvider())
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
